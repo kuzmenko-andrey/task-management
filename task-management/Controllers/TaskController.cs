@@ -1,51 +1,53 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+
 using task_management.business.ViewModels;
 
 namespace task_management.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class TaskController : ControllerBase
     {
-        [Route("user")]
+        [Route("task")]
         [HttpGet]
         public IActionResult Get(int id)
         {
             return Ok();
         }
 
-        [Route("user")]
+        [Route("task")]
         [HttpPost]
-        public IActionResult Create([FromBody] User request)
+        public IActionResult Create(TaskItem request)
         {
             return Ok();
         }
 
-        [Route("/user/{id}/upload_photo")]
+        [Route("task")]
+        [HttpPut]
+        public IActionResult Update(TaskItem request)
+        {
+            return Ok();
+        }
+
+        [Route("/task/{id}/assign")]
         [HttpPost]
-        public IActionResult UploadPhoto(int id)
+        public IActionResult Assign(string assigne)
         {
             return Ok();
         }
 
-        [Route("user")]
-        [HttpPut]
-        public IActionResult Update([FromBody] User request)
+        [Route("/task/{id}/status")]
+        [HttpPost]
+        public IActionResult Status(string status)
         {
             return Ok();
         }
 
-        [Route("/user/{id}/upload_photo")]
-        [HttpPut]
-        public IActionResult UpdatePhoto(int id)
-        {
-            return Ok();
-        }
-
-        [Route("user")]
+        [Route("task")]
         [HttpDelete]
         public IActionResult Delete(int id)
         {
             return Ok();
         }
+
     }
 }

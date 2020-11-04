@@ -15,7 +15,6 @@ using task_management.business.ViewModels;
 
 namespace task_management.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
