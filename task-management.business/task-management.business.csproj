@@ -9,4 +9,8 @@
     <ProjectReference Include="..\task-management.data\task-management.data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
 </Project>

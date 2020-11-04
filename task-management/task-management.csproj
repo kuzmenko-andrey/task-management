@@ -25,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\task-management.business\task-management.business.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\task-management.business\task-management.business.csproj" />
+    <Folder Include="ClientApp\src\app\model\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

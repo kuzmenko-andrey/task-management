@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using task_management.data.Entities;
 
 namespace task_management.data
 {
@@ -17,5 +18,7 @@ namespace task_management.data
         {
             optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
         }
+
+        public DbSet<Account> Accounts { get; set; }
     }
 }
