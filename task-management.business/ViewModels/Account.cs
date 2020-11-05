@@ -15,5 +15,7 @@ namespace task_management.business.ViewModels
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Position { get; set; }
+
+        public Role Role { get; set; }
     }
 }

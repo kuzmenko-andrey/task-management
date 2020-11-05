@@ -62,7 +62,7 @@ namespace task_management.Controllers
         [HttpPost]
         public IActionResult LoginAdmin([FromBody] Login request)
         {
-            var user = AuthenticateAdminUser(request.Email, request.Password);
+            var user = AuthenticateAdmin(request.Email, request.Password);
             if (user != null)
             {
                 var token = GenerateJWT(user);
@@ -90,10 +90,10 @@ namespace task_management.Controllers
         }
 
         public Account AuthenticateUser(string email, string password) =>
-            this._domain.Get().SingleOrDefault(user => user.Email == email && Crypto.VerifyHashedPassword(user.Password, password));
+            this._domain.Get().SingleOrDefault(user => user.Email == email && user.Role == Role.User && Crypto.VerifyHashedPassword(user.Password, password));
 
-        public Account AuthenticateAdminUser(string email, string password) =>
-            this._domain.Get().SingleOrDefault(user => user.Email == email /*&& user.Role == Admin*/ && Crypto.VerifyHashedPassword(user.Password, password));
+        public Account AuthenticateAdmin(string email, string password) =>
+            this._domain.Get().SingleOrDefault(user => user.Email == email && user.Role == Role.Admin && Crypto.VerifyHashedPassword(user.Password, password));
 
         private string GenerateJWT(Account user)
         {
@@ -105,7 +105,7 @@ namespace task_management.Controllers
             var claims = new List<Claim> {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                //new Claim("role", user.Role.ToString())
+                new Claim("role", user.Role.ToString())
             };
 
             var token = new JwtSecurityToken(
