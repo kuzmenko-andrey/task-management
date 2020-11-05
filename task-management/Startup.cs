@@ -1,10 +1,16 @@
+using AutoMapper;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using task_management.business;
+using task_management.data;
 
 namespace task_management
 {
@@ -26,6 +32,14 @@ namespace task_management
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddDbContext<TaskManagerDbContext>(builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<data.Repositories.Account>();
+
+            services.AddTransient<business.Domains.Account>();
+
+            var mapConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
+            services.AddSingleton(mapConfig.CreateMapper());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -7,16 +7,34 @@ namespace task_management.data.Repositories
 {
     public class Account
     {
-        TaskManagerDbContext context;
+        TaskManagerDbContext _context;
 
-        public Account(IConfiguration configuration)
+        public Account(TaskManagerDbContext context)
         {
-            this.context = new TaskManagerDbContext(configuration);
+            this._context = context;
         }
 
         public IEnumerable<Entities.Account> Get()
         {
-            return context.Accounts.ToList();
+            return _context.Accounts.ToList();
+        }
+
+        public void Create(Entities.Account account)
+        {
+            _context.Accounts.Add(account);
+            _context.SaveChanges();
+        }
+
+        public void Update(Entities.Account account)
+        {
+            _context.Accounts.Update(account);
+            _context.SaveChanges();
+        }
+
+        public void Delete(Entities.Account account)
+        {
+            _context.Accounts.Remove(account);
+            _context.SaveChanges();
         }
     }
 }

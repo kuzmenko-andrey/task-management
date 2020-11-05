@@ -13,9 +13,8 @@ namespace task_management.data
             if (!context.Accounts.Any())
             {
                 context.Accounts.AddRange(new Entities.Account[] {
-                    new Entities.Account() { Guid = Guid.NewGuid(), Email = "user1@email.com", Password = Crypto.SHA256("111111") },
-                    new Entities.Account() { Guid = Guid.NewGuid(), Email = "user2@email.com", Password = Crypto.SHA256("222222") },
-                    new Entities.Account() { Guid = Guid.NewGuid(), Email = "admin@email.com", Password = Crypto.SHA256("password") }
+                    new Entities.Account() { Email = "user1@email.com", Password = Crypto.SHA256("111111") },
+                    new Entities.Account() { Email = "admin@email.com", Password = Crypto.SHA256("password") }
                 });
             }
 

@@ -15,23 +15,31 @@ using task_management.business.ViewModels;
 
 namespace task_management.Controllers
 {
+    [Route("api")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        business.Domains.Account domain;
-        private readonly IOptions<AuthOptions> AuthOptions;
+        private business.Domains.Account _domain;
+        private readonly IOptions<AuthOptions> _authOptions;
 
-        public AuthController(IConfiguration configuration, IOptions<AuthOptions> authOptions)
+        public AuthController(business.Domains.Account domain, IOptions<AuthOptions> authOptions)
         {
-            this.domain = new business.Domains.Account(configuration);
-            this.AuthOptions = authOptions;
+            //this._domain = new business.Domains.Account(configuration);
+            this._domain = domain;
+            this._authOptions = authOptions;
         }
 
         [Route("sign_up")]
         [HttpPost]
         public IActionResult SignUp([FromBody] SignUp request)
         {
-            return Unauthorized();
+            if (this._domain.Exists(request.Email))
+            {
+                return Conflict();
+            }
+
+            this._domain.Create(request);
+            return Ok();
         }
 
         [Route("login")]
@@ -69,12 +77,12 @@ namespace task_management.Controllers
 
         public Account AuthenticateUser(string email, string password)
         {
-            return this.domain.Get().SingleOrDefault(user => user.Email == email && Crypto.VerifyHashedPassword(user.Password, password));
+            return this._domain.Get().SingleOrDefault(user => user.Email == email && Crypto.VerifyHashedPassword(user.Password, password));
         }
 
         private string GenerateJWT(Account user)
         {
-            var authParam = this.AuthOptions.Value;
+            var authParam = this._authOptions.Value;
 
             var securityKey = authParam.GetSymmetricSecurityKey();
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

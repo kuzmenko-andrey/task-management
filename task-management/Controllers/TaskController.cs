@@ -4,6 +4,7 @@ using task_management.business.ViewModels;
 
 namespace task_management.Controllers
 {
+    [Route("api")]
     [ApiController]
     public class TaskController : ControllerBase
     {
