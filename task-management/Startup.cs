@@ -34,9 +34,11 @@ namespace task_management
             });
 
             services.AddDbContext<TaskManagerDbContext>(builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddTransient<data.Repositories.Account>();
+            services.AddTransient<data.Repositories.AccountRepository>();
+            services.AddTransient<data.Repositories.TaskRepository>();
 
-            services.AddTransient<business.Domains.Account>();
+            services.AddTransient<business.Domains.AccountDomain>();
+            services.AddTransient<business.Domains.TaskDomain>();
 
             var mapConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
             services.AddSingleton(mapConfig.CreateMapper());

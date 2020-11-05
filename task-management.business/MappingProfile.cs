@@ -10,6 +10,8 @@ namespace task_management.business
             CreateMap<ViewModels.Account, data.Entities.Account>();
             CreateMap<ViewModels.SignUp, data.Entities.Account>();
             CreateMap<ViewModels.User, data.Entities.Account>();
+
+            CreateMap<ViewModels.TaskItem, data.Entities.TaskItem>();
         }
     }
 }

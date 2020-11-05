@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace task_management.business.Domains
 {
-    public class Account
+    public class AccountDomain
     {
         IMapper _mapper;
-        data.Repositories.Account _repository;
+        data.Repositories.AccountRepository _repository;
 
-        public Account(IMapper mapper, data.Repositories.Account repository)
+        public AccountDomain(IMapper mapper, data.Repositories.AccountRepository repository)
         {
             this._mapper = mapper;
             this._repository = repository;

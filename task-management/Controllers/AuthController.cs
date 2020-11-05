@@ -19,10 +19,10 @@ namespace task_management.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private business.Domains.Account _domain;
+        private business.Domains.AccountDomain _domain;
         private readonly IOptions<AuthOptions> _authOptions;
 
-        public AuthController(business.Domains.Account domain, IOptions<AuthOptions> authOptions)
+        public AuthController(business.Domains.AccountDomain domain, IOptions<AuthOptions> authOptions)
         {
             this._domain = domain;
             this._authOptions = authOptions;

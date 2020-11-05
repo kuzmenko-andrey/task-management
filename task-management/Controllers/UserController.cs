@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 using System.IO;
 using System.Linq;
@@ -14,10 +12,10 @@ namespace task_management.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private business.Domains.Account _domain;
+        private business.Domains.AccountDomain _domain;
         private readonly IHostingEnvironment _environment;
 
-        public UserController(business.Domains.Account domain, IHostingEnvironment environment)
+        public UserController(business.Domains.AccountDomain domain, IHostingEnvironment environment)
         {
             this._domain = domain;
             this._environment = environment;

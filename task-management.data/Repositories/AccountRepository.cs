@@ -1,15 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace task_management.data.Repositories
 {
-    public class Account
+    public class AccountRepository
     {
         TaskManagerDbContext _context;
 
-        public Account(TaskManagerDbContext context)
+        public AccountRepository(TaskManagerDbContext context)
         {
             this._context = context;
         }
