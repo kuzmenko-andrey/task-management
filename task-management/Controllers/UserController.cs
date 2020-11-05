@@ -53,6 +53,49 @@ namespace task_management.Controllers
         [HttpPost]
         public IActionResult UploadPhoto(int id)
         {
+            return UploadPhotoFiles(id);
+        }
+
+        [Route("user")]
+        [HttpPut]
+        public IActionResult Update([FromBody] User request)
+        {
+            if (!_domain.Exists(request.Id))
+            {
+                return NotFound();
+            }
+
+            if (_domain.Exists(request.Email))
+            {
+                return Conflict();
+            }
+
+            _domain.Update(request);
+            return Ok();
+        }
+
+        [Route("/user/{id}/upload_photo")]
+        [HttpPut]
+        public IActionResult UpdatePhoto(int id)
+        {
+            return UploadPhotoFiles(id);
+        }
+
+        [Route("user")]
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            if (!_domain.Exists(id))
+            {
+                return NotFound();
+            }
+
+            _domain.Delete(id);
+            return Ok();
+        }
+
+        private IActionResult UploadPhotoFiles(int id)
+        {
             foreach (var image in Request.Form.Files)
             {
                 if (image != null && image.Length > 0)
@@ -88,39 +131,6 @@ namespace task_management.Controllers
                     }
                 }
             }
-            return Ok();
-        }
-
-        [Route("user")]
-        [HttpPut]
-        public IActionResult Update([FromBody] User request)
-        {
-            if (!_domain.Exists(request.Id))
-            {
-                return NotFound();
-            }
-
-            _domain.Update(request);
-            return Ok();
-        }
-
-        [Route("/user/{id}/upload_photo")]
-        [HttpPut]
-        public IActionResult UpdatePhoto(int id)
-        {
-            return Ok();
-        }
-
-        [Route("user")]
-        [HttpDelete]
-        public IActionResult Delete(int id)
-        {
-            if (!_domain.Exists(id))
-            {
-                return NotFound();
-            }
-
-            _domain.Delete(id);
             return Ok();
         }
     }

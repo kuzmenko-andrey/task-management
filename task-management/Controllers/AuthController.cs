@@ -24,7 +24,6 @@ namespace task_management.Controllers
 
         public AuthController(business.Domains.Account domain, IOptions<AuthOptions> authOptions)
         {
-            //this._domain = new business.Domains.Account(configuration);
             this._domain = domain;
             this._authOptions = authOptions;
         }
@@ -47,11 +46,26 @@ namespace task_management.Controllers
         public IActionResult Login([FromBody] Login request)
         {
             var user = AuthenticateUser(request.Email, request.Password);
-
             if (user != null)
             {
                 var token = GenerateJWT(user);
+                return Ok(new
+                {
+                    access_token = token
+                });
+            }
 
+            return Unauthorized();
+        }
+
+        [Route("login\admin")]
+        [HttpPost]
+        public IActionResult LoginAdmin([FromBody] Login request)
+        {
+            var user = AuthenticateAdminUser(request.Email, request.Password);
+            if (user != null)
+            {
+                var token = GenerateJWT(user);
                 return Ok(new
                 {
                     access_token = token
@@ -75,10 +89,11 @@ namespace task_management.Controllers
             return Unauthorized();
         }
 
-        public Account AuthenticateUser(string email, string password)
-        {
-            return this._domain.Get().SingleOrDefault(user => user.Email == email && Crypto.VerifyHashedPassword(user.Password, password));
-        }
+        public Account AuthenticateUser(string email, string password) =>
+            this._domain.Get().SingleOrDefault(user => user.Email == email && Crypto.VerifyHashedPassword(user.Password, password));
+
+        public Account AuthenticateAdminUser(string email, string password) =>
+            this._domain.Get().SingleOrDefault(user => user.Email == email /*&& user.Role == Admin*/ && Crypto.VerifyHashedPassword(user.Password, password));
 
         private string GenerateJWT(Account user)
         {
