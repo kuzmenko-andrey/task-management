@@ -12,12 +12,12 @@ namespace task_management.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private business.Domains.AccountDomain _domain;
+        private business.Domains.AccountDomain _accountDomain;
         private readonly IHostingEnvironment _environment;
 
-        public UserController(business.Domains.AccountDomain domain, IHostingEnvironment environment)
+        public UserController(business.Domains.AccountDomain accountDomain, IHostingEnvironment environment)
         {
-            this._domain = domain;
+            this._accountDomain = accountDomain;
             this._environment = environment;
         }
 
@@ -25,12 +25,12 @@ namespace task_management.Controllers
         [HttpGet]
         public IActionResult Get(int id)
         {
-            if (!_domain.Exists(id))
+            if (!_accountDomain.IdExists(id))
             {
-                return NotFound();
+                return NotFound("Id did not exists");
             }
 
-            var account = _domain.Get(id);
+            var account = _accountDomain.Get(id);
             return Ok(account);
         }
 
@@ -38,12 +38,12 @@ namespace task_management.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] User request)
         {
-            if (this._domain.Exists(request.Email))
+            if (this._accountDomain.EmailExists(request.Email))
             {
-                return Conflict();
+                return Conflict("Email already exist");
             }
 
-            this._domain.Create(request);
+            this._accountDomain.Create(request);
             return Ok();
         }
 
@@ -58,17 +58,17 @@ namespace task_management.Controllers
         [HttpPut]
         public IActionResult Update([FromBody] User request)
         {
-            if (!_domain.Exists(request.Id))
+            if (!_accountDomain.IdExists(request.Id))
             {
-                return NotFound();
+                return NotFound("Id did not found");
             }
 
-            if (_domain.Exists(request.Email))
+            if (_accountDomain.EmailExists(request.Email))
             {
-                return Conflict();
+                return Conflict("Email already exist");
             }
 
-            _domain.Update(request);
+            _accountDomain.Update(request);
             return Ok();
         }
 
@@ -79,16 +79,16 @@ namespace task_management.Controllers
             return UploadPhotoFiles(id);
         }
 
-        [Route("user")]
+        [Route("user/{id}")]
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            if (!_domain.Exists(id))
+            if (!_accountDomain.IdExists(id))
             {
-                return NotFound();
+                return NotFound("Id did not found");
             }
 
-            _domain.Delete(id);
+            _accountDomain.Delete(id);
             return Ok();
         }
 
@@ -123,9 +123,9 @@ namespace task_management.Controllers
                         }
                         System.IO.File.WriteAllBytes(filePath, array);
 
-                        var account = _domain.Get(id);
+                        var account = _accountDomain.Get(id);
                         account.HasAvatar = true;
-                        _domain.Update(account);
+                        _accountDomain.Update(account);
                     }
                 }
             }

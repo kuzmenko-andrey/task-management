@@ -29,9 +29,11 @@ namespace task_management.business.Domains
             return _mapper.Map<data.Entities.Account, ViewModels.Account>(account);
         }
 
-        public bool Exists(string email) => _repository.Get().Any(a => a.Email == email);
+        public bool EmailExists(string email) => _repository.Get().Any(a => a.Email == email);
 
-        public bool Exists(int id) => _repository.Get().Any(a => a.Id == id);
+        public bool UsernameExists(string username) => _repository.Get().Any(a => a.Username == username);
+
+        public bool IdExists(int id) => _repository.Get().Any(a => a.Id == id);
 
         public void Create(ViewModels.Account account)
         {

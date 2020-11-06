@@ -1,5 +1,6 @@
 using AutoMapper;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using task_management.business;
+using task_management.Common;
 using task_management.data;
 
 namespace task_management
@@ -32,6 +34,30 @@ namespace task_management
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            var authOptionsConfiguration = Configuration.GetSection("Auth");
+            services.Configure<AuthOptions>(authOptionsConfiguration);
+
+            var authOptions = authOptionsConfiguration.Get<AuthOptions>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = true;
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                  //ValidIssuer = authOptions.Issuer
+
+                  ValidateAudience = false,
+                  //ValidAudience = authOptions.Audience
+
+                  ValidateLifetime = true,
+
+                        IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
+                        ValidateIssuerSigningKey = true
+                    };
+                });
 
             services.AddDbContext<TaskManagerDbContext>(builder => builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<data.Repositories.AccountRepository>();
@@ -67,7 +93,10 @@ namespace task_management
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+                app.UseAuthentication();
+                app.UseAuthorization();
+
+                app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",

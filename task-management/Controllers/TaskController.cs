@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+
 using task_management.business.ViewModels;
 
 namespace task_management.Controllers
@@ -8,23 +12,25 @@ namespace task_management.Controllers
     [ApiController]
     public class TaskController : ControllerBase
     {
-        private business.Domains.TaskDomain _domain;
+        private business.Domains.TaskDomain _taskDomain;
+        private business.Domains.AccountDomain _accountDomain;
 
-        public TaskController(business.Domains.TaskDomain domain)
+        public TaskController(business.Domains.TaskDomain taskDomain, business.Domains.AccountDomain accountDomain)
         {
-            this._domain = domain;
+            this._taskDomain = taskDomain;
+            this._accountDomain = accountDomain;
         }
 
         [Route("task")]
         [HttpGet]
         public IActionResult Get(int id)
         {
-            if (!_domain.Exists(id))
+            if (!_taskDomain.Exists(id))
             {
-                return NotFound();
+                return NotFound("Id did not found");
             }
 
-            var task = _domain.Get(id);
+            var task = _taskDomain.Get(id);
             return Ok(task);
         }
 
@@ -32,35 +38,55 @@ namespace task_management.Controllers
         [HttpPost]
         public IActionResult Create(TaskItem request)
         {
-            this._domain.Create(request);
+            var accountIdString = User?.FindFirst(ClaimTypes.Name)?.Value;
+            int? id = (accountIdString != null ? int.Parse(accountIdString) : (int?)null);
+
+            if (!id.HasValue)
+            {
+                return NotFound("Unknown user");
+            }
+
+            string username = _accountDomain.Get(id.Value).Username;
+            if (string.IsNullOrEmpty(username))
+            {
+                return NotFound("Username is empty");
+            }
+            request.Assignee = username;
+
+            this._taskDomain.Create(request);
             return Ok();
         }
 
-        [Route("task")]
+        [Route("task/{id}")]
         [HttpPut]
-        public IActionResult Update(TaskItem request)
+        public IActionResult Update(int id, TaskItem request)
         {
-            if (!_domain.Exists(request.Id))
+            if (!_taskDomain.Exists(id))
             {
-                return NotFound();
+                return NotFound("Id did not found");
             }
 
-            _domain.Update(request);
+            _taskDomain.Update(request);
             return Ok();
         }
 
         [Route("/task/{id}/assign")]
         [HttpPost]
-        public IActionResult Assign(int id, string assigne)
+        public IActionResult Assign(int id, string assignee)
         {
-            if (!_domain.Exists(id))
+            if (!_taskDomain.Exists(id))
             {
-                return NotFound();
+                return NotFound("Id did not found");
             }
 
-            var task = _domain.Get(id);
-            task.Assigne = assigne;
-            _domain.Update(task);
+            if (_accountDomain.Get().Any(a => a.Username == assignee))
+            {
+                return NotFound("Assigne did not found");
+            }
+
+            var task = _taskDomain.Get(id);
+            task.Assignee = assignee;
+            _taskDomain.Update(task);
 
             return Ok();
         }
@@ -69,28 +95,28 @@ namespace task_management.Controllers
         [HttpPost]
         public IActionResult Status(int id, string status)
         {
-            if (!_domain.Exists(id))
+            if (!_taskDomain.Exists(id))
             {
                 return NotFound();
             }
 
-            var task = _domain.Get(id);
+            var task = _taskDomain.Get(id);
             task.Status = status;
-            _domain.Update(task);
+            _taskDomain.Update(task);
 
             return Ok();
         }
 
-        [Route("task")]
+        [Route("task/{id}")]
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            if (!_domain.Exists(id))
+            if (!_taskDomain.Exists(id))
             {
-                return NotFound();
+                return NotFound("Id did not found");
             }
 
-            _domain.Delete(id);
+            _taskDomain.Delete(id);
             return Ok();
         }
 

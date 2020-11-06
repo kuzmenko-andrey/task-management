@@ -19,12 +19,12 @@ namespace task_management.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private business.Domains.AccountDomain _domain;
+        private business.Domains.AccountDomain _accountDomain;
         private readonly IOptions<AuthOptions> _authOptions;
 
-        public AuthController(business.Domains.AccountDomain domain, IOptions<AuthOptions> authOptions)
+        public AuthController(business.Domains.AccountDomain accountDomain, IOptions<AuthOptions> authOptions)
         {
-            this._domain = domain;
+            this._accountDomain = accountDomain;
             this._authOptions = authOptions;
         }
 
@@ -32,12 +32,17 @@ namespace task_management.Controllers
         [HttpPost]
         public IActionResult SignUp([FromBody] SignUp request)
         {
-            if (this._domain.Exists(request.Email))
+            if (this._accountDomain.EmailExists(request.Email))
             {
-                return Conflict();
+                return Conflict("Email already exist");
             }
 
-            this._domain.Create(request);
+            if (this._accountDomain.UsernameExists(request.Username))
+            {
+                return Conflict("Username already exist");
+            }
+
+            this._accountDomain.Create(request);
             return Ok();
         }
 
@@ -58,7 +63,7 @@ namespace task_management.Controllers
             return Unauthorized();
         }
 
-        [Route("login\admin")]
+        [Route("login/admin")]
         [HttpPost]
         public IActionResult LoginAdmin([FromBody] Login request)
         {
@@ -82,6 +87,13 @@ namespace task_management.Controllers
             return Unauthorized();
         }
 
+        [Route("reset_password")]
+        [HttpPost]
+        public IActionResult ResetPassword([FromBody] ResetPassword request)
+        {
+            return Unauthorized();
+        }
+
         [Route("reset_password/{code}")]
         [HttpPost]
         public IActionResult ResetPassword(int code, [FromBody] ResetPassword request)
@@ -89,11 +101,11 @@ namespace task_management.Controllers
             return Unauthorized();
         }
 
-        public Account AuthenticateUser(string email, string password) =>
-            this._domain.Get().SingleOrDefault(user => user.Email == email && user.Role == Role.User && Crypto.VerifyHashedPassword(user.Password, password));
+        private Account AuthenticateUser(string email, string password) =>
+            this._accountDomain.Get().SingleOrDefault(user => user.Email == email && user.Role == Role.User && Crypto.VerifyHashedPassword(user.Password, password));
 
-        public Account AuthenticateAdmin(string email, string password) =>
-            this._domain.Get().SingleOrDefault(user => user.Email == email && user.Role == Role.Admin && Crypto.VerifyHashedPassword(user.Password, password));
+        private Account AuthenticateAdmin(string email, string password) =>
+            this._accountDomain.Get().SingleOrDefault(user => user.Email == email && user.Role == Role.Admin && Crypto.VerifyHashedPassword(user.Password, password));
 
         private string GenerateJWT(Account user)
         {
@@ -103,9 +115,9 @@ namespace task_management.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim> {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim("role", user.Role.ToString())
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var token = new JwtSecurityToken(
