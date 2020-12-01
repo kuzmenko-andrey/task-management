@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -9,6 +10,7 @@ using task_management.business.ViewModels;
 namespace task_management.Controllers
 {
     [Route("api")]
+    [Authorize]
     [ApiController]
     public class TaskController : ControllerBase
     {

@@ -35,6 +35,9 @@ namespace task_management
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            var mailOptionsConfiguration = Configuration.GetSection("Mail");
+            services.Configure<MailOptions>(mailOptionsConfiguration);
+
             var authOptionsConfiguration = Configuration.GetSection("Auth");
             services.Configure<AuthOptions>(authOptionsConfiguration);
 
@@ -47,12 +50,12 @@ namespace task_management
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         ValidateIssuer = false,
-                  //ValidIssuer = authOptions.Issuer
-
-                  ValidateAudience = false,
-                  //ValidAudience = authOptions.Audience
-
-                  ValidateLifetime = true,
+                        //ValidIssuer = authOptions.Issuer
+                        
+                        ValidateAudience = false,
+                        //ValidAudience = authOptions.Audience
+                        
+                        ValidateLifetime = true,
 
                         IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true

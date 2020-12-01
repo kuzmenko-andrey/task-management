@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 using System.IO;
@@ -9,6 +10,7 @@ using task_management.business.ViewModels;
 namespace task_management.Controllers
 {
     [Route("api")]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
